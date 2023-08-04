@@ -1,27 +1,23 @@
-import { User } from "../models/users.model";
+type EntityType<T> = { key: keyof T; value: T[keyof T] };
 
-class UserStore {
-  store: User[];
-  constructor() {
-    this.store = [];
-  }
-  findAll = () => {
-    return this.store;
+abstract class DBStore<Entity extends { _id: string }, CreateDTO> {
+  protected entities: Entity[] = [];
+
+  abstract create(createDTO: CreateDTO): Entity;
+
+  findAll = () => this.entities;
+
+  findOne = ({ key, value }: EntityType<Entity>) => {
+    return this.entities.find((user) => user[key] === value);
   };
 
-  findById = (id: string) => {
-    return this.store.find((user) => user._id === id);
-  };
-
-  addUser = (user: User) => {
-    this.store.push(user);
-  };
-
-  deleteUserById = (id: string) => {
-    const UserIndex = this.store.findIndex((user) => user._id === id);
-    this.store.splice(UserIndex, 1);
-    return this.store;
+  deleteById = (id: string) => {
+    const idx = this.entities.findIndex((entity) => entity._id === id);
+    if (idx < 0) return null;
+    const deletedEntity = this.entities[idx];
+    this.entities.splice(idx, 1);
+    return deletedEntity;
   };
 }
 
-export default new UserStore();
+export default DBStore;
