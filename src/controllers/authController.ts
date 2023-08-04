@@ -1,6 +1,6 @@
 import usersdb from "../db/usersdb";
 import UserService from "../services/user.service";
-import { Request, Response } from "express";
+import { NextFunction, Request, Response } from "express";
 import { validationResult } from "express-validator";
 
 interface SignUpBody {
@@ -8,17 +8,21 @@ interface SignUpBody {
   password: string;
 }
 
-export const signUp = async (req: Request, res: Response) => {
+export const signUp = async (
+  req: Request,
+  res: Response,
+  next: NextFunction
+) => {
   try {
     const { login, password } = req.body as SignUpBody;
     const errors = validationResult(req);
     if (!errors.isEmpty()) {
       errors.throw();
     }
-    const userData = UserService.userSignUp(login, password);
+    const userData = UserService.signUp(login, password);
     return res.json(userData);
   } catch (error) {
-    console.log(error);
+    next(error);
   }
 
   res.end();

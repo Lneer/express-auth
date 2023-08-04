@@ -1,10 +1,11 @@
 import UserEntities from "../db/usersdb";
+import APiError from "./errors.service";
 
 class UserService {
-  userSignUp = (login: string, password: string) => {
+  signUp = (login: string, password: string) => {
     const candidate = UserEntities.findOne({ key: "login", value: login });
-    if (!candidate) {
-      throw new Error("Bad Request");
+    if (candidate) {
+      throw APiError.Badrequest(`user with login ${login} already exist`);
     }
     return UserEntities.create({ login, password });
   };
