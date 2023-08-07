@@ -1,4 +1,4 @@
-import usersdb from "../db/usersdb";
+// import usersdb from "../db/usersdb";
 import APiError from "../services/errors.service";
 import UserService from "../services/user.service";
 import { NextFunction, Request, Response } from "express";
@@ -38,5 +38,5 @@ export const signIn = async (req: Request, res: Response) => {
 };
 
 export const check = async (req: Request, res: Response) => {
-  res.send(usersdb.findAll());
+  // res.send(usersdb.findAll());
 };

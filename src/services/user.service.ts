@@ -1,15 +1,35 @@
-import UserEntities from "../db/usersdb";
+import store from "./store.service";
 import APiError from "./errors.service";
-import dbService from "./redis.service";
+import tokenService from "./token.service";
+import { EntityId } from "redis-om";
 
 class UserService {
   signUp = async (login: string, password: string) => {
-    const candidate = UserEntities.findOne({ key: "login", value: login });
+    const candidate = await store.findOne(store.userRepository, {
+      key: "login",
+      value: login,
+    });
+    console.log("candidate", candidate);
     if (candidate) {
       throw APiError.Badrequest(`user with login ${login} already exist`);
     }
-    await dbService.addItem(login, password);
-    return UserEntities.create({ login, password });
+
+    const createdUser = await store.create(store.userRepository, {
+      login,
+      password,
+    });
+    console.log("createdUser", createdUser);
+
+    const userId = createdUser[EntityId];
+    console.log("userId", userId);
+    const { accessToken, refreshToken } = tokenService.generateToken({
+      login,
+      userId,
+    });
+    await store.create(store.tokenRepository, {
+      userId,
+      refreshToken,
+    });
   };
 }
 

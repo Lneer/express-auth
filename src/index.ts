@@ -1,10 +1,11 @@
+import "dotenv/config";
 import express, { Request, Response } from "express";
 import cors from "cors";
 import authRouter from "./routes/authRoutes";
 import errorsMiddleware from "./middleware/errors.middleware";
-import dbConnect from "./services/redis.service";
+import store from "./services/store.service";
 
-const PORT = 5000;
+const PORT = process.env.PORT || 5000;
 
 const app = express();
 
@@ -19,7 +20,7 @@ app.get("/", (req: Request, res: Response) => {
 });
 
 const start = async () => {
-  await dbConnect.dbConnect();
+  await store.connect();
   app.listen(PORT, () => console.log(`server started on port ${PORT}`));
 };
 
