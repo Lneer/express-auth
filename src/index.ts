@@ -2,6 +2,7 @@ import express, { Request, Response } from "express";
 import cors from "cors";
 import authRouter from "./routes/authRoutes";
 import errorsMiddleware from "./middleware/errors.middleware";
+import dbConnect from "./services/redis.service";
 
 const PORT = 5000;
 
@@ -17,4 +18,9 @@ app.get("/", (req: Request, res: Response) => {
   res.send("<h1>hello<h1>");
 });
 
-app.listen(PORT, () => console.log(`server started on port ${PORT}`));
+const start = async () => {
+  await dbConnect.dbConnect();
+  app.listen(PORT, () => console.log(`server started on port ${PORT}`));
+};
+
+start();

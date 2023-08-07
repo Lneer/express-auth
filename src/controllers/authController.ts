@@ -22,7 +22,7 @@ export const signUp = async (
         errors.array().reduce((acc, item) => acc + item.msg + ", ", "")
       );
     }
-    const userData = UserService.signUp(login, password);
+    const userData = await UserService.signUp(login, password);
     return res.json(userData);
   } catch (error) {
     next(error);
