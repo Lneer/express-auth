@@ -1,12 +1,25 @@
 import express from "express";
 import { check, signIn, signUp } from "../controllers/authController";
-import { body } from "express-validator";
+import { body, checkSchema } from "express-validator";
 const authRouter = express.Router();
 
 authRouter.post(
   "/signup",
-  body("login").isEmail(),
-  body("password").isLength({ min: 3, max: 12 }),
+  checkSchema(
+    {
+      login: {
+        errorMessage: "Invalid login",
+        isEmail: true,
+      },
+      password: {
+        isLength: {
+          options: { min: 8 },
+          errorMessage: "Password should be at least 8 chars",
+        },
+      },
+    },
+    ["body"]
+  ),
   signUp
 );
 authRouter.post("/signin", signIn);

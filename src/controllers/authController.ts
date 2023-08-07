@@ -1,4 +1,5 @@
 import usersdb from "../db/usersdb";
+import APiError from "../services/errors.service";
 import UserService from "../services/user.service";
 import { NextFunction, Request, Response } from "express";
 import { validationResult } from "express-validator";
@@ -17,7 +18,9 @@ export const signUp = async (
     const { login, password } = req.body as SignUpBody;
     const errors = validationResult(req);
     if (!errors.isEmpty()) {
-      errors.throw();
+      throw APiError.Badrequest(
+        errors.array().reduce((acc, item) => acc + item.msg + ", ", "")
+      );
     }
     const userData = UserService.signUp(login, password);
     return res.json(userData);
