@@ -1,6 +1,5 @@
-// import usersdb from "../db/usersdb";
 import APiError from "../services/errors.service";
-import UserService from "../services/user.service";
+import userService from "../services/user.service";
 import { NextFunction, Request, Response } from "express";
 import { validationResult } from "express-validator";
 
@@ -9,34 +8,50 @@ interface SignUpBody {
   password: string;
 }
 
-export const signUp = async (
-  req: Request,
-  res: Response,
-  next: NextFunction
-) => {
-  try {
-    const { login, password } = req.body as SignUpBody;
-    const errors = validationResult(req);
-    if (!errors.isEmpty()) {
-      throw APiError.Badrequest(
-        errors.array().reduce((acc, item) => acc + item.msg + ", ", "")
-      );
+class AuthController {
+  signUp = async (req: Request, res: Response, next: NextFunction) => {
+    try {
+      const { login, password } = req.body as SignUpBody;
+      const errors = validationResult(req);
+      if (!errors.isEmpty()) {
+        throw APiError.Badrequest(
+          errors.array().reduce((acc, item) => acc + item.msg + ", ", "")
+        );
+      }
+      const userData = await userService.signUp(login, password);
+      res.cookie("refreshToken", userData.refreshToken, { httpOnly: true });
+      return res.json(userData);
+    } catch (error) {
+      next(error);
     }
-    const userData = await UserService.signUp(login, password);
-    return res.json(userData);
-  } catch (error) {
-    next(error);
-  }
 
-  res.end();
-};
+    res.end();
+  };
 
-export const signIn = async (req: Request, res: Response) => {
-  // const { login, password } = req.body as SignInBody;
-  // res.redirect("/");
-  // res.end();
-};
+  signIn = async (req: Request, res: Response, next: NextFunction) => {
+    try {
+      const { login, password } = req.body as SignUpBody;
+      const userData = await userService.signIn(login, password);
+      res.cookie("refreshToken", userData.refreshToken, { httpOnly: true });
+      return res.json(userData);
+    } catch (error) {
+      next(error);
+    }
+  };
 
-export const check = async (req: Request, res: Response) => {
-  // res.send(usersdb.findAll());
-};
+  signOut = async (req: Request, res: Response, next: NextFunction) => {
+    try {
+      const { refreshToken } = req.cookies;
+      const token = userService.signOut(refreshToken);
+      res.clearCookie("refreshToken");
+      res.status(200);
+      res.end();
+    } catch (error) {}
+  };
+
+  refresh = async (req: Request, res: Response, next: NextFunction) => {};
+
+  check = async (req: Request, res: Response) => {};
+}
+
+export default new AuthController();

@@ -1,5 +1,5 @@
 import express from "express";
-import { check, signIn, signUp } from "../controllers/authController";
+import authController from "../controllers/authController";
 import { body, checkSchema } from "express-validator";
 const authRouter = express.Router();
 
@@ -20,9 +20,10 @@ authRouter.post(
     },
     ["body"]
   ),
-  signUp
+  authController.signUp
 );
-authRouter.post("/signin", signIn);
-authRouter.get("/", check);
+authRouter.post("/signin", authController.signIn);
+authRouter.post("/signout", authController.signOut);
+authRouter.get("/refresh", authController.refresh);
 
 export default authRouter;

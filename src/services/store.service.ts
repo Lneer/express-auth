@@ -1,5 +1,5 @@
 import { createClient } from "redis";
-import { Entity, Repository } from "redis-om";
+import { Entity, EntityData, Repository } from "redis-om";
 import { tokenSchema } from "../models/token.model";
 import { userSchema } from "../models/users.model";
 
@@ -26,6 +26,16 @@ class StoreService {
       .where(key as string)
       .equals(value as string)
       .return.first();
+  };
+
+  remove = async (repo: Repository, key: string) => {
+    const token = this.findOne(repo, {
+      key: "refreshToken",
+      value: key,
+    }) as unknown as { userId: string; refreshToken: string | undefined };
+    token.refreshToken = undefined;
+    this.create(repo, { token });
+    // return repo.remove(key);
   };
 
   // getItem = async (id: string) => {
