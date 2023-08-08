@@ -42,14 +42,25 @@ class AuthController {
   signOut = async (req: Request, res: Response, next: NextFunction) => {
     try {
       const { refreshToken } = req.cookies;
-      const token = userService.signOut(refreshToken);
+      await userService.signOut(refreshToken);
       res.clearCookie("refreshToken");
       res.status(200);
       res.end();
-    } catch (error) {}
+    } catch (error) {
+      next(error);
+    }
   };
 
-  refresh = async (req: Request, res: Response, next: NextFunction) => {};
+  refresh = async (req: Request, res: Response, next: NextFunction) => {
+    try {
+      const { refreshToken } = req.cookies;
+      const userData = await userService.refresh(refreshToken);
+      res.cookie("refreshToken", userData.refreshToken, { httpOnly: true });
+      return res.json(userData);
+    } catch (error) {
+      next(error);
+    }
+  };
 
   check = async (req: Request, res: Response) => {};
 }

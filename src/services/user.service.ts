@@ -67,7 +67,41 @@ class UserService {
   };
 
   signOut = async (refreshToken: string) => {
+    if (!refreshToken) {
+      throw APiError.Badrequest(`please signIn first`);
+    }
     store.remove(store.tokenRepository, refreshToken);
+  };
+
+  refresh = async (refreshToken: string) => {
+    if (!refreshToken) {
+      throw APiError.Badrequest(`please signIn first`);
+    }
+    const isValidToken = tokenService.validateToken(
+      "refreshToken",
+      refreshToken
+    );
+    const tokenFromDB = await store.findOne(store.tokenRepository, {
+      key: "refreshToken",
+      value: refreshToken,
+    });
+    if (!isValidToken || !tokenFromDB) {
+      throw APiError.Badrequest(`please signIn first`);
+    }
+    const candidate = (await store.findOne(store.userRepository, {
+      key: "EntityId",
+      value: tokenFromDB.userId,
+    })) as User;
+    if (!candidate) {
+      throw APiError.Badrequest(`please signIn first`);
+    }
+    const userDto = new UserDto(candidate);
+    const tokens = tokenService.generate({
+      ...userDto,
+    });
+    const userId = candidate[EntityId];
+    await tokenService.save(userId as string, tokens.refreshToken);
+    return { ...tokens, user: userDto };
   };
 }
 

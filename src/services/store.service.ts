@@ -29,13 +29,12 @@ class StoreService {
   };
 
   remove = async (repo: Repository, key: string) => {
-    const token = this.findOne(repo, {
+    const token = (await this.findOne(repo, {
       key: "refreshToken",
       value: key,
-    }) as unknown as { userId: string; refreshToken: string | undefined };
-    token.refreshToken = undefined;
-    this.create(repo, { token });
-    // return repo.remove(key);
+    })) as unknown as { userId: string; refreshToken: string | null };
+    token.refreshToken = null;
+    this.create(repo, { ...token });
   };
 
   // getItem = async (id: string) => {
