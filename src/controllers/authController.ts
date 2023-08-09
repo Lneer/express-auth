@@ -1,5 +1,5 @@
 import APiError from "../services/errors.service";
-import userService from "../services/user.service";
+import { userService } from "../services/user.service";
 import { NextFunction, Request, Response } from "express";
 import { validationResult } from "express-validator";
 

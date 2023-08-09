@@ -1,6 +1,7 @@
 import jwt from "jsonwebtoken";
 import { TokenType, Tokens } from "../types/types";
-import tokenRepository from "../models/token.model";
+import { tokenRepository } from "../models/token.model";
+import "dotenv/config";
 
 const JWT_ACCESS_SECRET = process.env.JWT_ACCESS_SECRET as string;
 const JWT_REFRESH_SECRET = process.env.JWT_REFRESH_SECRET as string;
@@ -69,4 +70,4 @@ class TokenService {
   }
 }
 
-export default new TokenService();
+export const tokenService = new TokenService();

@@ -1,6 +1,6 @@
 import { createClient } from "redis";
-// type ClientType = ReturnType<typeof createClient>;
 
-const redisClient = createClient();
+export const redisClient = createClient();
 
-export default redisClient;
+redisClient.on("error", (err) => console.error(err));
+redisClient.on("connect", () => console.log("connected with db"));

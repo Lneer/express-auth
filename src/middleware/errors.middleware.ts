@@ -1,6 +1,5 @@
 import { NextFunction, Request, Response } from "express";
 import APiError from "../services/errors.service";
-import { FieldValidationError, Result } from "express-validator";
 
 const errorsMiddleware = (
   err: Error,

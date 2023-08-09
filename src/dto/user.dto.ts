@@ -1,4 +1,4 @@
-import { User } from "../models/users.model";
+import { User } from "../types/types";
 
 class UserDto {
   login: string;

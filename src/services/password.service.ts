@@ -1,4 +1,5 @@
 import bcrypt from "bcrypt";
+import "dotenv/config";
 
 const SALT = Number(process.env.SALT) || 2;
 

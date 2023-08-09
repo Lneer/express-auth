@@ -1,17 +1,14 @@
-import APiError from "./errors.service";
-import tokenService from "./token.service";
-import UserDto from "../dto/user.dto";
 import { EntityId } from "redis-om";
-import { userRepository, User } from "../models/users.model";
+import UserDto from "../dto/user.dto";
+import APiError from "./errors.service";
+import { tokenService } from "./token.service";
 import { passwordService } from "./password.service";
-import tokenRepository from "../models/token.model";
+import { userRepository } from "../models/users.model";
+import { tokenRepository } from "../models/token.model";
+import { User } from "../types/types";
 
 class UserService {
   async signUp(login: string, password: string) {
-    // const candidate = await store.findOne(store.userRepository, {
-    //   key: "login",
-    //   value: login,
-    // });
     const candidate = await userRepository.findOne({
       key: "login",
       value: login,
@@ -23,10 +20,6 @@ class UserService {
 
     const hashedPassword = await passwordService.hash(password);
 
-    // const createdUser = await store.create(store.userRepository, {
-    //   login,
-    //   password: hashedPassword,
-    // });
     const createdUser = await userRepository.save({
       login,
       password: hashedPassword,
@@ -36,6 +29,7 @@ class UserService {
     const tokens = tokenService.generate({
       ...userDto,
     });
+
     await tokenService.save(userId as string, tokens.refreshToken);
     return { ...tokens, user: userDto };
   }
@@ -59,11 +53,12 @@ class UserService {
     }
 
     const userId = candidate[EntityId] as string;
+
     const userDto = new UserDto(candidate);
+
     const tokens = tokenService.generate({
       ...userDto,
     });
-
     await tokenService.save(userId, tokens.refreshToken);
 
     return { ...tokens, user: userDto };
@@ -93,10 +88,9 @@ class UserService {
     if (!isValidToken || !tokenFromDB) {
       throw APiError.UnAutorized(`please signIn first`);
     }
-    const candidate = (await userRepository.findOne({
-      key: "EntityId",
-      value: tokenFromDB.userId,
-    })) as User;
+    const candidate = (await userRepository.fetch(
+      tokenFromDB.userId as string
+    )) as User;
     if (!candidate) {
       throw APiError.UnAutorized(`please signIn first`);
     }
@@ -104,10 +98,11 @@ class UserService {
     const tokens = tokenService.generate({
       ...userDto,
     });
+
     const userId = candidate[EntityId];
     await tokenService.save(userId as string, tokens.refreshToken);
     return { ...tokens, user: userDto };
   };
 }
 
-export default new UserService();
+export const userService = new UserService();

@@ -1,0 +1,182 @@
+{
+    "swagger": "2.0",
+    "info": {
+      "version": "1.0.0", 
+      "title": "Express Auth App ",
+      "description": "API for test",
+      "license": "ISC"
+    },
+  
+    "tags": [
+      {
+        "name": "Auth",
+        "description": "API for signIn/signUp"
+      }
+    ],
+    "securityDefinitions":{
+      "Bearer":{
+        "type": "apiKey",
+        "name": "Authorization",
+        "description": "Enter your token in format *Bearer token*",
+        "in": "header"
+      }
+    },
+    "consumes": ["application/json"],
+    "produces": ["application/json"],
+    "paths":{
+      "/auth/signin": {
+        "post": {
+          "tags": ["Auth"],
+          "summary": "SignIn",
+          "description": "Get token",
+          "parameters": [
+            {
+              "name": "AuthInfo",
+              "in": "body",
+              "description": "User auth info",
+              "schema": {
+                "required": [
+                  "login",
+                  "password"
+                ],
+                "properties": {
+                  "login": {
+                    "type": "string"
+                  },       
+                  "password": {
+                    "type": "string"
+                  }       
+                },
+                "example": {
+                  "login": "IMask",
+                  "password": "Tesla4ever"
+                }
+              }
+            }
+          ],
+          "produces": ["application/json"],
+          "responses": {
+            "200": {
+              "description": "Successeful login",
+              "schema": {
+                "properties": {
+                  "token": {
+                    "type": "string"
+                  }      
+                }
+              }
+            },
+            "400": {
+              "description": "Bad Request",
+              "schema": {
+                "$ref": "#/definitions/ErrorResponse"
+              }
+            },
+            "401": {
+              "description": "Authorization error",
+              "schema": {
+                "$ref": "#/definitions/ErrorResponse"
+              }
+            }
+          }
+        }
+      },
+      "/auth/signup": {
+        "post": {
+          "tags": ["Auth"],
+          "summary": "SignUp",
+          "description": "Create new User",
+          "parameters": [
+            {
+              "name": "user",
+              "in": "body",
+              "description": "User that we want to create",
+              "schema": {
+                "required": [
+                  "name",
+                  "login",
+                  "password"
+                ],
+                "properties": {
+                  "name": {
+                    "type": "string"
+                  },
+                  "login": {
+                    "type": "string"
+                  },       
+                  "password": {
+                    "type": "string"
+                  }       
+                },
+                "example": {
+                  "name": "Ilon Mask",
+                  "login": "IMask",
+                  "password": "Tesla4ever"
+                }
+              }
+              
+            }
+          ],
+          "produces": ["application/json"],
+          "responses": {
+            "200": {
+              "description": "New user is created",
+              "schema": {
+                "$ref": "#/definitions/User"
+              }
+            },
+            "400": {
+              "description": "Bad Request",
+              "schema": {
+                "$ref": "#/definitions/ErrorResponse"              
+              }
+            },
+            "409": {
+              "description": "Login already exist",
+              "schema": {
+                "$ref": "#/definitions/ErrorResponse"
+              }
+            }
+          }
+        }
+      }
+    },
+    "definitions" : {
+      "User": {
+        "required": [
+          "_id",
+          "name",
+          "login"
+        ],
+        "properties": {
+          "_id": {
+            "type": "string"
+          },
+          "name": {
+            "type": "string"
+          },
+          "login": {
+            "type": "string"
+          }      
+        }
+      },
+      "ErrorResponse": {
+        "required": [
+          "statusCode",
+          "message"
+        ],
+        "properties": {
+          "statusCode": {
+            "type": "number"
+          },
+          "message": {
+            "type": "string"
+          }     
+        },
+        "example": {
+          "statusCode": "4xx",
+          "message": "reason"
+        }
+      }
+    }
+}
