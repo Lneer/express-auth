@@ -1,52 +1,55 @@
-import bcrypt from "bcrypt";
-import store from "./store.service";
 import APiError from "./errors.service";
 import tokenService from "./token.service";
-import { EntityId } from "redis-om";
 import UserDto from "../dto/user.dto";
-import { User } from "../models/users.model";
+import { EntityId } from "redis-om";
+import { userRepository, User } from "../models/users.model";
+import { passwordService } from "./password.service";
+import tokenRepository from "../models/token.model";
 
 class UserService {
-  signUp = async (login: string, password: string) => {
-    const candidate = await store.findOne(store.userRepository, {
+  async signUp(login: string, password: string) {
+    // const candidate = await store.findOne(store.userRepository, {
+    //   key: "login",
+    //   value: login,
+    // });
+    const candidate = await userRepository.findOne({
       key: "login",
       value: login,
     });
+
     if (candidate) {
       throw APiError.Badrequest(`user with login ${login} already exist`);
     }
-    const hashedPassword = await bcrypt.hash(
-      password,
-      Number(process.env.SALT) || 2
-    );
-    const createdUser = await store.create(store.userRepository, {
+
+    const hashedPassword = await passwordService.hash(password);
+
+    // const createdUser = await store.create(store.userRepository, {
+    //   login,
+    //   password: hashedPassword,
+    // });
+    const createdUser = await userRepository.save({
       login,
       password: hashedPassword,
     });
-
     const userId = createdUser[EntityId];
-
     const userDto = new UserDto(createdUser as User);
-
-    const { accessToken, refreshToken } = tokenService.generate({
+    const tokens = tokenService.generate({
       ...userDto,
     });
-
-    await tokenService.save(userId as string, refreshToken);
-
-    return { accessToken, refreshToken, user: userDto };
-  };
+    await tokenService.save(userId as string, tokens.refreshToken);
+    return { ...tokens, user: userDto };
+  }
 
   signIn = async (login: string, password: string) => {
-    const candidate = (await store.findOne(store.userRepository, {
+    const candidate = (await userRepository.findOne({
       key: "login",
       value: login,
     })) as User | null;
 
     if (!candidate) {
-      throw APiError.Badrequest(`user with login ${login} doesn't exist`);
+      throw APiError.UnAutorized(`user with login ${login} doesn't exist`);
     }
-    const isCorrectPassword = await bcrypt.compare(
+    const isCorrectPassword = await passwordService.compare(
       password,
       candidate.password
     );
@@ -55,45 +58,47 @@ class UserService {
       throw APiError.Badrequest(`incorrect password`);
     }
 
-    const userId = candidate[EntityId];
+    const userId = candidate[EntityId] as string;
     const userDto = new UserDto(candidate);
-    const { accessToken, refreshToken } = tokenService.generate({
+    const tokens = tokenService.generate({
       ...userDto,
     });
 
-    await tokenService.save(userId as string, refreshToken);
+    await tokenService.save(userId, tokens.refreshToken);
 
-    return { accessToken, refreshToken, user: userDto };
+    return { ...tokens, user: userDto };
   };
 
   signOut = async (refreshToken: string) => {
     if (!refreshToken) {
-      throw APiError.Badrequest(`please signIn first`);
+      throw APiError.UnAutorized(`please signIn first`);
     }
-    store.remove(store.tokenRepository, refreshToken);
+    tokenService.remove(refreshToken);
   };
 
   refresh = async (refreshToken: string) => {
     if (!refreshToken) {
-      throw APiError.Badrequest(`please signIn first`);
+      throw APiError.UnAutorized(`please signIn first`);
     }
     const isValidToken = tokenService.validateToken(
       "refreshToken",
       refreshToken
     );
-    const tokenFromDB = await store.findOne(store.tokenRepository, {
+
+    const tokenFromDB = await tokenRepository.findOne({
       key: "refreshToken",
       value: refreshToken,
     });
+
     if (!isValidToken || !tokenFromDB) {
-      throw APiError.Badrequest(`please signIn first`);
+      throw APiError.UnAutorized(`please signIn first`);
     }
-    const candidate = (await store.findOne(store.userRepository, {
+    const candidate = (await userRepository.findOne({
       key: "EntityId",
       value: tokenFromDB.userId,
     })) as User;
     if (!candidate) {
-      throw APiError.Badrequest(`please signIn first`);
+      throw APiError.UnAutorized(`please signIn first`);
     }
     const userDto = new UserDto(candidate);
     const tokens = tokenService.generate({

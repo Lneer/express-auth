@@ -11,6 +11,10 @@ class APiError extends Error {
   static Badrequest(message: string, errors: Error[] = []) {
     return new APiError(400, message, errors);
   }
+
+  static UnAutorized(message: string, errors: Error[] = []) {
+    return new APiError(404, message, errors);
+  }
 }
 
 export default APiError;
