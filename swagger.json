@@ -10,7 +10,7 @@
     "tags": [
       {
         "name": "Auth",
-        "description": "API for signIn/signUp"
+        "description": "Autorization API"
       }
     ],
     "securityDefinitions":{
@@ -27,7 +27,7 @@
       "/auth/signin": {
         "post": {
           "tags": ["Auth"],
-          "summary": "SignIn",
+          "summary": "Login and returns the authentication  cookie",
           "description": "Get token",
           "parameters": [
             {
@@ -57,12 +57,27 @@
           "produces": ["application/json"],
           "responses": {
             "200": {
-              "description": "Successeful login",
-              "schema": {
-                "properties": {
-                  "token": {
-                    "type": "string"
-                  }      
+              "description": "Successeful login.  The session ID is returned in a cookie named `refreshToken`. You need to include this cookie in subsequent requests.",
+              "header":{
+                "Set-Cookie": {
+                  "schema": {
+                    "type": "string",
+                    "example":"refreshToken=eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJsb2dpbiI6IklNYXNrQGltYXNrLnJ1IiwiaWF0IjoxNjkxNjE0MDk5LCJleHAiOjE2OTE2MTc2OTl9.raq5-L2_IzcMoC7TgSjfFMfpyFuMF5grRJy43Qm-9zc"
+                  }
+                }
+              },
+              "content": {
+                "application/json": {
+                  "schema": {
+                    "properties": {
+                      "token": {
+                        "type":"string"
+                      },
+                      "user": {
+                        "type": "object"
+                      }      
+                    }
+                  }
                 }
               }
             },
@@ -85,6 +100,124 @@
         "post": {
           "tags": ["Auth"],
           "summary": "SignUp",
+          "description": "Create new User",
+          "parameters": [
+            {
+              "name": "user",
+              "in": "body",
+              "description": "User that we want to create",
+              "schema": {
+                "required": [
+                  "name",
+                  "login",
+                  "password"
+                ],
+                "properties": {
+                  "name": {
+                    "type": "string"
+                  },
+                  "login": {
+                    "type": "string"
+                  },       
+                  "password": {
+                    "type": "string"
+                  }       
+                },
+                "example": {
+                  "name": "Ilon Mask",
+                  "login": "IMask",
+                  "password": "Tesla4ever"
+                }
+              }
+              
+            }
+          ],
+          "produces": ["application/json"],
+          "responses": {
+            "200": {
+              "description": "New user is created",
+              "schema": {
+                "$ref": "#/definitions/User"
+              }
+            },
+            "400": {
+              "description": "Bad Request",
+              "schema": {
+                "$ref": "#/definitions/ErrorResponse"              
+              }
+            },
+            "409": {
+              "description": "Login already exist",
+              "schema": {
+                "$ref": "#/definitions/ErrorResponse"
+              }
+            }
+          }
+        }
+      },
+      "/auth/signout": {
+        "post": {
+          "tags": ["Auth"],
+          "summary": "SignUp",
+          "description": "Create new User",
+          "parameters": [
+            {
+              "name": "user",
+              "in": "body",
+              "description": "User that we want to create",
+              "schema": {
+                "required": [
+                  "name",
+                  "login",
+                  "password"
+                ],
+                "properties": {
+                  "name": {
+                    "type": "string"
+                  },
+                  "login": {
+                    "type": "string"
+                  },       
+                  "password": {
+                    "type": "string"
+                  }       
+                },
+                "example": {
+                  "name": "Ilon Mask",
+                  "login": "IMask",
+                  "password": "Tesla4ever"
+                }
+              }
+              
+            }
+          ],
+          "produces": ["application/json"],
+          "responses": {
+            "200": {
+              "description": "New user is created",
+              "schema": {
+                "$ref": "#/definitions/User"
+              }
+            },
+            "400": {
+              "description": "Bad Request",
+              "schema": {
+                "$ref": "#/definitions/ErrorResponse"              
+              }
+            },
+            "409": {
+              "description": "Login already exist",
+              "schema": {
+                "$ref": "#/definitions/ErrorResponse"
+              }
+            }
+          }
+        }
+      },
+      "/auth/refresh": {
+        "get": {
+          "tags": ["Auth"],
+          "summary": "Refresh",
           "description": "Create new User",
           "parameters": [
             {

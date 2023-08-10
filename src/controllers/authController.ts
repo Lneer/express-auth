@@ -33,7 +33,10 @@ class AuthController {
       const { login, password } = req.body as SignUpBody;
       const userData = await userService.signIn(login, password);
       res.cookie("refreshToken", userData.refreshToken, { httpOnly: true });
-      return res.json(userData);
+      return res.json({
+        user: { ...userData.user },
+        token: userData.accessToken,
+      });
     } catch (error) {
       next(error);
     }
