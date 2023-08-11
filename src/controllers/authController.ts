@@ -15,7 +15,8 @@ class AuthController {
       const errors = validationResult(req);
       if (!errors.isEmpty()) {
         throw APiError.Badrequest(
-          errors.array().reduce((acc, item) => acc + item.msg + ", ", "")
+          "format data error",
+          errors.formatWith((err) => err.msg).array()
         );
       }
       const userData = await userService.signUp(login, password);
@@ -35,7 +36,7 @@ class AuthController {
       res.cookie("refreshToken", userData.refreshToken, { httpOnly: true });
       return res.json({
         user: { ...userData.user },
-        token: userData.accessToken,
+        accessToken: userData.accessToken,
       });
     } catch (error) {
       next(error);

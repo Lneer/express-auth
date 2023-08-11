@@ -7,7 +7,7 @@ import authRouter from "../routes/authRoutes";
 import { redisClient } from "./redis.service";
 import { userRepository } from "../models/users.model";
 import { tokenRepository } from "../models/token.model";
-import swaggerDocument from "../../swagger.json";
+import swaggerDocument from "../../swConfig.json";
 import "dotenv/config";
 
 const PORT = process.env.PORT || 5000;
@@ -18,13 +18,13 @@ app.use(cors({ origin: "*" }));
 app.use(express.json());
 app.use(cookieParser());
 app.use("/api-docs", swaggerUi.serve, swaggerUi.setup(swaggerDocument));
-app.use(errorsMiddleware);
 
 app.use("/auth", authRouter);
 
 app.get("/", (req: Request, res: Response) => {
   res.send("<h1>hello<h1>");
 });
+app.use(errorsMiddleware);
 
 export const start = async () => {
   await redisClient.connect();

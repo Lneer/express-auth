@@ -1,0 +1,43 @@
+openapi: '3.0.2'
+info:
+  title: Express Auth App
+  version: '1.0'
+  description: Api documentation and test
+servers:
+  - url: https://http://localhost:4000/
+tags:
+  - name: Auth
+    description: Autorization API
+paths:
+  /auth/signin:
+    post:
+      summary: Returns the authentication  cookie and user
+      description: Get tokens and user info
+      requestBody:
+        required: true
+        content: 
+          application/json:
+            schema:
+              type: object
+              required:
+                - login
+                - password
+              properties:
+                login:
+                  type: string
+                password: 
+                  type: string
+              example: 
+                login: IMask
+                password: Tesla4ever
+      responses:
+        '200':
+          description: >
+           Successeful login.  
+           The session ID is returned in a cookie named `refreshToken`. 
+           You need to include this cookie in subsequent requests
+          headers:
+            Set-Cookie:
+              schema:
+                type: string
+                example: refreshToken=eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJsb2dpbiI6IklNYXNrQGltYXNrLnJ1IiwiaWF0IjoxNjkxNjE0MDk5LCJleHAiOjE2OTE2MTc2OTl9.raq5-L2_IzcMoC7TgSjfFMfpyFuMF5grRJy43Qm-9zc; Path=/; HttpOnly

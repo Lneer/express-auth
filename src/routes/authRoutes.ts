@@ -8,13 +8,15 @@ authRouter.post(
   checkSchema(
     {
       login: {
-        errorMessage: "Invalid login",
-        isEmail: true,
+        isLength: {
+          options: { min: 3 },
+          errorMessage: "Login should be at least 3 chars",
+        },
       },
       password: {
         isLength: {
           options: { min: 3 },
-          errorMessage: "Password should be at least 8 chars",
+          errorMessage: "Password should be at least 3 chars",
         },
       },
     },

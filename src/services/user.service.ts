@@ -31,7 +31,8 @@ class UserService {
     });
 
     await tokenService.save(userId as string, tokens.refreshToken);
-    return { ...tokens, user: userDto };
+
+    return { ...tokens, user: { ...userDto, _id: userId } };
   }
 
   signIn = async (login: string, password: string) => {
@@ -41,7 +42,7 @@ class UserService {
     })) as User | null;
 
     if (!candidate) {
-      throw APiError.UnAutorized(`user with login ${login} doesn't exist`);
+      throw APiError.Badrequest(`user with login ${login} doesn't exist`);
     }
     const isCorrectPassword = await passwordService.compare(
       password,
@@ -61,7 +62,7 @@ class UserService {
     });
     await tokenService.save(userId, tokens.refreshToken);
 
-    return { ...tokens, user: userDto };
+    return { ...tokens, user: { ...userDto, _id: userId } };
   };
 
   signOut = async (refreshToken: string) => {

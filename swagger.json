@@ -1,5 +1,5 @@
 {
-    "swagger": "2.0",
+  "openapi": "3.1.0",
     "info": {
       "version": "1.0.0", 
       "title": "Express Auth App ",
@@ -21,14 +21,13 @@
         "in": "header"
       }
     },
-    "consumes": ["application/json"],
-    "produces": ["application/json"],
     "paths":{
       "/auth/signin": {
         "post": {
           "tags": ["Auth"],
           "summary": "Login and returns the authentication  cookie",
           "description": "Get token",
+          "requestBody": {},
           "parameters": [
             {
               "name": "AuthInfo",

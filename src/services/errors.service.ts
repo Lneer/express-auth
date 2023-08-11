@@ -3,9 +3,10 @@ class APiError extends Error {
   errors: Error[];
 
   constructor(status: number, message: string, errors: Error[] = []) {
-    super(message);
+    super();
     this.errors = errors;
     this.status = status;
+    this.message = message;
   }
 
   static Badrequest(message: string, errors: Error[] = []) {
@@ -13,7 +14,7 @@ class APiError extends Error {
   }
 
   static UnAutorized(message: string, errors: Error[] = []) {
-    return new APiError(404, message, errors);
+    return new APiError(401, message, errors);
   }
 }
 
