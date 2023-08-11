@@ -1,3 +1,5 @@
+import { StatusCodes } from "../types/types";
+
 class APiError extends Error {
   status: number;
   errors: Error[];
@@ -9,12 +11,12 @@ class APiError extends Error {
     this.message = message;
   }
 
-  static Badrequest(message: string, errors: Error[] = []) {
-    return new APiError(400, message, errors);
+  static badRequest(message: string, errors: Error[] = []) {
+    return new APiError(StatusCodes["BAD REQUEST"], message, errors);
   }
 
-  static UnAutorized(message: string, errors: Error[] = []) {
-    return new APiError(401, message, errors);
+  static unAutorized(message: string, errors: Error[] = []) {
+    return new APiError(StatusCodes["AUTORIZATION ERROR"], message, errors);
   }
 }
 

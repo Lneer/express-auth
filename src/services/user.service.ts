@@ -15,7 +15,7 @@ class UserService {
     });
 
     if (candidate) {
-      throw APiError.Badrequest(`user with login ${login} already exist`);
+      throw APiError.badRequest(`user with login ${login} already exist`);
     }
 
     const hashedPassword = await passwordService.hash(password);
@@ -42,7 +42,7 @@ class UserService {
     })) as User | null;
 
     if (!candidate) {
-      throw APiError.Badrequest(`user with login ${login} doesn't exist`);
+      throw APiError.badRequest(`user with login ${login} doesn't exist`);
     }
     const isCorrectPassword = await passwordService.compare(
       password,
@@ -50,7 +50,7 @@ class UserService {
     );
 
     if (!isCorrectPassword) {
-      throw APiError.Badrequest(`incorrect password`);
+      throw APiError.badRequest(`incorrect password`);
     }
 
     const userId = candidate[EntityId] as string;
@@ -67,14 +67,14 @@ class UserService {
 
   signOut = async (refreshToken: string) => {
     if (!refreshToken) {
-      throw APiError.UnAutorized(`please signIn first`);
+      throw APiError.unAutorized(`User unAutorized`);
     }
-    tokenService.remove(refreshToken);
+    await tokenService.remove(refreshToken);
   };
 
   refresh = async (refreshToken: string) => {
     if (!refreshToken) {
-      throw APiError.UnAutorized(`please signIn first`);
+      throw APiError.unAutorized(`User unAutorized`);
     }
     const isValidToken = tokenService.validateToken(
       "refreshToken",
@@ -87,13 +87,13 @@ class UserService {
     });
 
     if (!isValidToken || !tokenFromDB) {
-      throw APiError.UnAutorized(`please signIn first`);
+      throw APiError.unAutorized(`User unAutorized`);
     }
     const candidate = (await userRepository.fetch(
       tokenFromDB.userId as string
     )) as User;
     if (!candidate) {
-      throw APiError.UnAutorized(`please signIn first`);
+      throw APiError.unAutorized(`please signIn first`);
     }
     const userDto = new UserDto(candidate);
     const tokens = tokenService.generate({

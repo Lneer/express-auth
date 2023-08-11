@@ -7,7 +7,7 @@ import authRouter from "../routes/authRoutes";
 import { redisClient } from "./redis.service";
 import { userRepository } from "../models/users.model";
 import { tokenRepository } from "../models/token.model";
-import swaggerDocument from "../../swConfig.json";
+import swaggerDocument from "../../swagger.json";
 import "dotenv/config";
 
 const PORT = process.env.PORT || 5000;

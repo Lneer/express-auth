@@ -2,6 +2,7 @@ import APiError from "../services/errors.service";
 import { userService } from "../services/user.service";
 import { NextFunction, Request, Response } from "express";
 import { validationResult } from "express-validator";
+import { StatusCodes } from "../types/types";
 
 interface SignUpBody {
   login: string;
@@ -14,14 +15,14 @@ class AuthController {
       const { login, password } = req.body as SignUpBody;
       const errors = validationResult(req);
       if (!errors.isEmpty()) {
-        throw APiError.Badrequest(
+        throw APiError.badRequest(
           "format data error",
           errors.formatWith((err) => err.msg).array()
         );
       }
       const userData = await userService.signUp(login, password);
       res.cookie("refreshToken", userData.refreshToken, { httpOnly: true });
-      return res.json(userData);
+      return res.status(StatusCodes.SUCCSESS).json(userData);
     } catch (error) {
       next(error);
     }
@@ -47,9 +48,8 @@ class AuthController {
     try {
       const { refreshToken } = req.cookies;
       await userService.signOut(refreshToken);
-      res.clearCookie("refreshToken");
-      res.status(200);
-      res.end();
+      res.clearCookie("refreshToken").status(StatusCodes.DELETED);
+      return res.end();
     } catch (error) {
       next(error);
     }
@@ -60,7 +60,7 @@ class AuthController {
       const { refreshToken } = req.cookies;
       const userData = await userService.refresh(refreshToken);
       res.cookie("refreshToken", userData.refreshToken, { httpOnly: true });
-      return res.json(userData);
+      return res.json({ accessToken: userData.accessToken });
     } catch (error) {
       next(error);
     }

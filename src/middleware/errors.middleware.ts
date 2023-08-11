@@ -8,13 +8,11 @@ const errorsMiddleware = (
   next: NextFunction
 ) => {
   if (err instanceof APiError) {
-    res
-      .status(err.status)
-      .json({
-        statusCode: err.status,
-        message: err.message,
-        errors: err.errors,
-      });
+    return res.status(err.status).json({
+      statusCode: err.status,
+      message: err.message,
+      errors: err.errors,
+    });
   }
 
   return res.status(500).json({ message: err.message });
