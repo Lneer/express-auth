@@ -22,7 +22,7 @@ class AuthController {
       }
       const userData = await userService.signUp(login, password);
       res.cookie("refreshToken", userData.refreshToken, { httpOnly: true });
-      return res.status(StatusCodes.SUCCSESS).json(userData);
+      return res.status(StatusCodes.CREATED).json(userData);
     } catch (error) {
       next(error);
     }
