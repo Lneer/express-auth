@@ -16,7 +16,7 @@ In addition to the authorization functionality, a library for data management in
 - download from the repository with the command
   ```git clone https://github.com/Lneer/express-auth.git```
 - in case Windows OS run `Docker Desktop`
-- run application with the command
+- run application from `express-auth` directorywith the command  
   ```npm run project-start ```
 - application will run on the `Port 8080`
 

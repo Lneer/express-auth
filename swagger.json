@@ -19,8 +19,8 @@
     "paths": {
       "/auth/signin": {
         "post": {
-          "summary": "Returns the authentication  cookie and user",
-          "description": "Get tokens and user info",
+          "summary": "Get tokens and user",
+          "description": "Set cookie `refreshToken`  Return accessToken and userInfo",
           "tags": ["Auth"],
           "requestBody": {
             "$ref": "#/components/requestBodies/Autorization"
@@ -56,15 +56,15 @@
       },
       "/auth/signup": {
         "post": {
-          "summary": "User registration in bd",
-          "description": "Get tokens and user info",
+          "summary": "Create user and write data about user in bd",
+          "description": "Create user Set cookie `refreshToken`  Return accessToken and userInfo",
           "tags": ["Auth"],
           "requestBody": {
             "$ref": "#/components/requestBodies/Autorization"
           },
           "responses": {
             "201": {
-              "description": "Registration succsess. Resoinse is returned in a cookie named `refreshToken`.  You need to include this cookie in subsequent requests\n",
+              "description": "Registration succsess. Response is returned in a cookie named `refreshToken`.  You need to include this cookie in subsequent requests\n",
               "headers": {
                 "Set-Cookie": {
                   "schema": {
@@ -94,7 +94,7 @@
       "/auth/signout": {
         "post": {
           "summary": "Loguot from application",
-          "description": "Delete user's refresh token from DB",
+          "description": "Delete cookie `refreshToken` delete user's refresh token from DB",
           "tags": ["Auth"],
           "responses": {
             "204": {
@@ -113,7 +113,7 @@
       "/auth/refresh": {
         "get": {
           "summary": "Refresh tokens",
-          "description": "If there is valid token in cookie return a new pair of tokens will be returned",
+          "description": "If there is valid token in cookie set new refreshToken in cookie   and Return new accessToken ",
           "tags": ["Auth"],
           "responses": {
             "200": {
