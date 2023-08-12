@@ -1,6 +1,6 @@
 # Application for user authorization
 
-In addition to the authorization functionality, a library for data management in the radish database was tested
+In addition to the authorization functionality, a library for data management in the radis database was tested
 
 ## Components and libraries used: 
 - typescript
