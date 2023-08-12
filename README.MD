@@ -22,10 +22,10 @@ In addition to the authorization functionality, a library for data management in
 
 ## EndPoints 
 
-`/auth/signup` - registration 
-`/auth/signin` - login 
-`/auth/signout` - logout 
-`/auth/refresh` - refresh tokens 
+- `/auth/signup` - registration 
+- `/auth/signin` - login 
+- `/auth/signout` - logout 
+- `/auth/refresh` - refresh tokens 
 
 more detailed information about request and response schemas is described in swagger-doc
 `localhost:8080/api-docs`
