@@ -18,3 +18,14 @@ In addition to the authorization functionality, a library for data management in
 - in case Windows OS run `Docker Desktop`
 - run application with the command
   ```npm run project-start ```
+- application will run on the `Port 8080`
+
+## EndPoints 
+
+`/auth/signup` - registration 
+`/auth/signin` - login 
+`/auth/signout` - logout 
+`/auth/refresh` - refresh tokens 
+
+more detailed information about request and response schemas is described in swagger-doc
+`localhost:8080/api-docs`
